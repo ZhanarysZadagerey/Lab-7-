@@ -63,13 +63,16 @@ def crash():
     return make_response(jsonify(s=ret), 200)
 
 mock_save_last = None
-def save_last(op,args,res):
-    if mock_save_last:
-        mock_save_last(op,args,res)
-    else:
+
+def save_last(op, args, res):
+    try:
         timestamp = time.time()
         payload = {'timestamp': timestamp, 'op': op, 'args': args, 'res': res}
-        requests.post('http://db-manager:5000/notify', json=payload)
+        requests.post('http://db-manager:5000/notify', json=payload, timeout=1)
+    except:
+        # Ignore if DB manager is down
+        pass
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

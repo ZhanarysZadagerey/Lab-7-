@@ -10,105 +10,133 @@ app = Flask(__name__)
 def add():
     a = request.args.get('a', type=float)
     b = request.args.get('b', type=float)
-    if a is not None and b is not None:
-        res = a + b + 1
-        save_last("add", (a, b), res)
-        return make_response(jsonify(s=res), 200) #HTTP 200 OK
-    else:
-        return make_response('Invalid input\n', 400) #HTTP 400 BAD REQUEST
+
+    # 0 is valid → check None
+    if a is None or b is None:
+        return make_response("Invalid input\n", 400)
+
+    save_last("add", (a, b), a + b)
+    return make_response(jsonify(s=a + b), 200)
+
 
 @app.route('/sub')
 def sub():
     a = request.args.get('a', type=float)
     b = request.args.get('b', type=float)
-    if a is not None and b is not None:
-        save_last("sub", (a, b), a - b)
-        return make_response(jsonify(s=a - b), 200)
-    else:
-        return make_response('Invalid input\n', 400)
+
+    if a is None or b is None:
+        return make_response("Invalid input\n", 400)
+
+    save_last("sub", (a, b), a - b)
+    return make_response(jsonify(s=a - b), 200)
+
 
 @app.route('/mul')
 def mul():
     a = request.args.get('a', type=float)
     b = request.args.get('b', type=float)
-    if a is not None and b is not None:
-        save_last("mul", (a, b), a * b)
-        return make_response(jsonify(s=a * b), 200)
-    else:
-        return make_response('Invalid input\n', 400)
+
+    # FIX: accept zero properly
+    if a is None or b is None:
+        return make_response("Invalid input\n", 400)
+
+    save_last("mul", (a, b), a * b)
+    return make_response(jsonify(s=a * b), 200)
+
 
 @app.route('/div')
 def div():
     a = request.args.get('a', type=float)
     b = request.args.get('b', type=float)
-    if a is not None and b is not None:
-        if b == 0:
-            return make_response('Division by zero\n', 400)
-        save_last("div", (a, b), a / b)
-        return make_response(jsonify(s=a / b), 200)
-    else:
-        return make_response('Invalid input\n', 400)
+
+    if a is None or b is None:
+        return make_response("Invalid input\n", 400)
+
+    if b == 0:
+        return make_response("Division by zero\n", 400)
+
+    save_last("div", (a, b), a / b)
+    return make_response(jsonify(s=a / b), 200)
+
 
 @app.route('/mod')
 def mod():
     a = request.args.get('a', type=float)
     b = request.args.get('b', type=float)
-    if a is not None and b is not None:
-        if b == 0:
-            return make_response('Division by zero\n', 400)
-        save_last("mod", (a, b), a % b)
-        return make_response(jsonify(s=a % b), 200)
-    else:
-        return make_response('Invalid input\n', 400)
+
+    if a is None or b is None:
+        return make_response("Invalid input\n", 400)
+
+    if b == 0:
+        return make_response("Division by zero\n", 400)
+
+    res = a % b
+    save_last("mod", (a, b), res)
+    return make_response(jsonify(s=res), 200)
+
 
 @app.route('/random')
 def rand():
     a = request.args.get('a', type=int)
     b = request.args.get('b', type=int)
-    if a is not None and b is not None:
-        if a > b:
-            return make_response('Invalid input\n', 400)
-        res = random.randint(a, b)
-        save_last("random", (a, b), res)
-        return make_response(jsonify(s=res), 200)
-    else:
-        return make_response('Invalid input\n', 400)
+
+    # FIX: accept zero, reject missing
+    if a is None or b is None:
+        return make_response("Invalid input\n", 400)
+
+    if a > b:
+        return make_response("Invalid input\n", 400)
+
+    res = random.randint(a, b)
+    save_last("random", (a, b), res)
+    return make_response(jsonify(s=res), 200)
+
 
 @app.route('/reduce')
 def reduce():
     op = request.args.get('op', type=str)
     lst = request.args.get('lst', type=str)
-    if op and lst:
-        try:
-            lst = ast.literal_eval(lst)
-        except Exception:
-            return make_response('Invalid input\n', 400)
+
+    if op is None or lst is None:
+        return make_response("Invalid operator\n", 400)
+
+    # FIX: protect eval
+    try:
+        lst = eval(lst)
         if not isinstance(lst, list):
-            return make_response('Invalid input\n', 400)
-        if op == 'add':
-            res = sum(lst)
-            response = make_response(jsonify(s=res), 200)
-        elif op == 'sub':
-            res = lst[0] - sum(lst[1:])
-            response = make_response(jsonify(s=res), 200)
-        elif op == 'mul':
-            res = 1
-            for i in lst:
-                res *= i
-            response = make_response(jsonify(s=res), 200)
-        elif op == 'div':
-            res = lst[0]
-            for i in lst[1:]:
-                if i == 0:
-                    return make_response('Division by zero\n', 400)
-                res /= i
-            response = make_response(jsonify(s=res), 200)
-        else:
-            return make_response(f'Invalid operator: {op}', 400)
-        save_last("reduce", (op, lst), res)
-        return response
+            return make_response("Invalid list\n", 400)
+    except:
+        return make_response("Invalid list\n", 400)
+
+    # perform operations
+    if op == 'add':
+        res = sum(lst)
+
+    elif op == 'sub':
+        if len(lst) == 0:
+            return make_response("Invalid list\n", 400)
+        res = lst[0] - sum(lst[1:])
+
+    elif op == 'mul':
+        res = 1
+        for i in lst:
+            res *= i
+
+    elif op == 'div':
+        if len(lst) == 0:
+            return make_response("Invalid list\n", 400)
+        res = lst[0]
+        for i in lst[1:]:
+            if i == 0:
+                return make_response("Division by zero\n", 400)
+            res /= i
+
     else:
-        return make_response('Invalid input\n', 400)
+        return make_response(f"Invalid operator: {op}", 400)
+
+    save_last("reduce", (op, lst), res)
+    return make_response(jsonify(s=res), 200)
+
 
 @app.route('/crash')
 def crash():

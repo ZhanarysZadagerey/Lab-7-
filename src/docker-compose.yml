@@ -1,0 +1,32 @@
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - 5000:5000
+    depends_on:
+      - calc
+      - string
+      - db-manager
+
+  calc:
+    build: ./calc
+    depends_on:
+      - db-manager
+
+  string:
+    build: ./string
+    depends_on:
+      - db-manager
+  
+  db-manager:
+    build: ./dbm
+    depends_on:
+      - db
+    
+  db:
+    image: mongo:latest
+    volumes:
+      - dbdata:/data/db
+    command: mongod --quiet --logpath /dev/null 
+volumes:
+  dbdata:

@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  title: String Service API
+  version: "1.0"
+  description: API for string operations.
+
+servers:
+  - url: http://localhost:5000
+
+paths:
+  /concat:
+    get:
+      summary: Concatenate two strings
+      parameters:
+        - name: a
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: b
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Concatenation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: string
+        '400':
+          description: Invalid input
+
+  /upper:
+    get:
+      summary: Convert string to uppercase
+      parameters:
+        - name: a
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Uppercase result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: string
+        '400':
+          description: Invalid input
+
+  /lower:
+    get:
+      summary: Convert string to lowercase
+      parameters:
+        - name: a
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lowercase result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: string
+        '400':
+          description: Invalid input
+
+  /reduce:
+    get:
+      summary: Reduce a list of strings with an operation
+      parameters:
+        - name: op
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [concat]
+        - name: lst
+          in: query
+          required: true
+          schema:
+            type: string
+            description: Python list as string, e.g. ['a','b','c']
+      responses:
+        '200':
+          description: Reduction result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: string
+        '400':
+          description: Invalid input
+
+  /crash:
+    get:
+      summary: Crash the service (for testing)
+      responses:
+        '200':
+          description: Crash message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: string

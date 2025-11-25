@@ -1,0 +1,75 @@
+openapi: 3.0.0
+info:
+  title: DB Manager Service API
+  version: "1.0"
+  description: API for logging and retrieving operation records.
+
+servers:
+  - url: http://localhost:5000
+
+paths:
+  /getAll:
+    get:
+      summary: Get all operation logs
+      responses:
+        '200':
+          description: List of operation logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    timestamp:
+                      type: number
+                    op:
+                      type: string
+                    args:
+                      type: string
+                    res:
+                      type: string
+        '500':
+          description: Database error
+
+  /notify:
+    post:
+      summary: Add a new operation log
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                timestamp:
+                  type: number
+                op:
+                  type: string
+                args:
+                  type: string
+                res:
+                  type: string
+      responses:
+        '200':
+          description: Log added
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Database error
+
+  /crash:
+    get:
+      summary: Crash the service (for testing)
+      responses:
+        '200':
+          description: Crash message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: string

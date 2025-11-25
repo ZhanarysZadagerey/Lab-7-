@@ -1,0 +1,214 @@
+openapi: 3.0.0
+info:
+  title: Calc Service API
+  version: "1.0"
+  description: API for mathematical operations.
+
+servers:
+  - url: http://localhost:5000
+
+paths:
+  /add:
+    get:
+      summary: Add two numbers
+      parameters:
+        - name: a
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: b
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Sum result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: number
+        '400':
+          description: Invalid input
+
+  /sub:
+    get:
+      summary: Subtract two numbers
+      parameters:
+        - name: a
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: b
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Subtraction result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: number
+        '400':
+          description: Invalid input
+
+  /mul:
+    get:
+      summary: Multiply two numbers
+      parameters:
+        - name: a
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: b
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Multiplication result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: number
+        '400':
+          description: Invalid input
+
+  /div:
+    get:
+      summary: Divide two numbers
+      parameters:
+        - name: a
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: b
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Division result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: number
+        '400':
+          description: Invalid input or division by zero
+
+  /mod:
+    get:
+      summary: Modulo of two numbers
+      parameters:
+        - name: a
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: b
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Modulo result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: number
+        '400':
+          description: Invalid input or division by zero
+
+  /random:
+    get:
+      summary: Random integer between a and b (inclusive)
+      parameters:
+        - name: a
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: b
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Random integer result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: integer
+        '400':
+          description: Invalid input
+
+  /reduce:
+    get:
+      summary: Reduce a list of numbers with an operation
+      parameters:
+        - name: op
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [add, sub, mul, div]
+        - name: lst
+          in: query
+          required: true
+          schema:
+            type: string
+            description: Python list as string, e.g. [1,2,3]
+      responses:
+        '200':
+          description: Reduction result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: number
+        '400':
+          description: Invalid operator or input
+
+  /crash:
+    get:
+      summary: Crash the service (for testing)
+      responses:
+        '200':
+          description: Crash message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  s:
+                    type: string

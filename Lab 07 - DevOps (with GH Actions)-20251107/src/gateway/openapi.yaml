@@ -1,0 +1,108 @@
+openapi: 3.0.0
+info:
+  title: Gateway API
+  version: "1.0"
+  description: API Gateway for math, string, and database operations.
+
+servers:
+  - url: http://localhost:5000
+
+paths:
+  /calc/{op}:
+    get:
+      summary: Perform a math operation
+      parameters:
+        - name: op
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [add, sub, mul, div, mod, random, reduce, crash]
+        - name: a
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: b
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: lst
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: op
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operation result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid operation
+        '500':
+          description: Calculator service is down
+
+  /str/{op}:
+    get:
+      summary: Perform a string operation
+      parameters:
+        - name: op
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [lower, upper, concat, reduce, crash]
+        - name: a
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: b
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: lst
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: op
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Operation result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid operation
+        '500':
+          description: String service is down
+
+  /getAll:
+    get:
+      summary: Get all records from the DB Manager
+      responses:
+        '200':
+          description: List of records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '500':
+          description: DB Manager service is down

@@ -42,7 +42,7 @@ jobs:
         run: docker run -d -p 5000:5000 --name calc-container calc-service
 
       - name: Run calc Newman tests
-        run: newman run tests/calc.postman_collection.json
+        run: newman run tests/calc_ut.postman_collection.json
         continue-on-error: false
 
       - name: Stop calc container
@@ -60,7 +60,7 @@ jobs:
         run: docker run -d -p 5000:5000 --name string-container string-service
 
       - name: Run string Newman tests
-        run: newman run tests/string.postman_collection.json
+        run: newman run tests/string_ut.postman_collection.json
         continue-on-error: false
 
       - name: Stop string container
@@ -75,7 +75,7 @@ jobs:
         run: docker compose up -d
 
       - name: Run full system tests
-        run: newman run tests/full.postman_collection.json
+        run: newman run tests/integration.postman_collection.json
         continue-on-error: false
 
       - name: Stop entire architecture

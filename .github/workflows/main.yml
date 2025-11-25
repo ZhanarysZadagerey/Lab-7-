@@ -1,0 +1,87 @@
+name: MicroASE CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3. Install Newman
+      - name: Install Newman
+        run: |
+          npm install -g newman
+
+      # 4. Set up Docker Buildx
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      #######################################################
+      # 5. Test CALC microservice
+      #######################################################
+      - name: Build calc image
+        run: docker build -t calc-service ./src/calc/
+
+      - name: Run calc container
+        run: docker run -d -p 5000:5000 --name calc-container calc-service
+
+      - name: Run calc Newman tests
+        run: newman run tests/calc.postman_collection.json
+        continue-on-error: false
+
+      - name: Stop calc container
+        if: always()
+        run: docker stop calc-container && docker rm calc-container
+
+
+      #######################################################
+      # 6. Test STRING microservice
+      #######################################################
+      - name: Build string image
+        run: docker build -t string-service ./src/string/
+
+      - name: Run string container
+        run: docker run -d -p 5000:5000 --name string-container string-service
+
+      - name: Run string Newman tests
+        run: newman run tests/string.postman_collection.json
+        continue-on-error: false
+
+      - name: Stop string container
+        if: always()
+        run: docker stop string-container && docker rm string-container
+
+
+      #######################################################
+      # 7. Build and run entire architecture
+      #######################################################
+      - name: Docker Compose up
+        run: docker compose up -d
+
+      - name: Run full system tests
+        run: newman run tests/full.postman_collection.json
+        continue-on-error: false
+
+      - name: Stop entire architecture
+        if: always()
+        run: docker compose down
+
+    
+    
+    

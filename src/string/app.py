@@ -9,7 +9,7 @@ def concat():
     a = request.args.get('a', type=str)
     b = request.args.get('b', type=str)
     if a is not None and b is not None:
-        res = b + a
+        res = a + b
         save_last("concat",(a,b),res)
         return make_response(jsonify(s=res), 200)
     else:

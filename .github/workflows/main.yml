@@ -72,7 +72,7 @@ jobs:
       # 7. Build and run entire architecture
       #######################################################
       - name: Docker Compose up
-        run: docker compose up -d
+        run: docker compose -f src/docker-compose.yml up -d
 
       - name: Run full system tests
         run: newman run tests/integration.postman_collection.json
@@ -80,7 +80,7 @@ jobs:
 
       - name: Stop entire architecture
         if: always()
-        run: docker compose down
+        run: docker compose -f src/docker-compose.yml down
 
     
     
